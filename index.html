@@ -5156,4 +5156,151 @@
               <label class="option"><input type="checkbox" value="D"> Жарғылық капитал мөлшері</label>
               <label class="option"><input type="checkbox" value="E"> Дебиторлық берешек айналымдылығы және айналым кезеңі</label>
               <label class="option"><input type="checkbox" value="F"> Дивидендтік саясат коэффициенті</label>
-              <label class="option">
+              <label class="option"><input type="checkbox" value="G"> Қаржылық цикл ұзақтығы</label>
+            </div>
+
+            <div class="explanation">
+              Дұрыс жауаптар: B, E. Дебиторлық берешекті талдауда оның айналым активтеріндегі
+              үлесі, айналымдылығы және айналым кезеңі сияқты көрсеткіштер қолданылады.
+            </div>
+          </div>
+
+          <button class="btn btn-primary" type="button" onclick="checkSection('chapter-8-test')">
+            Нәтижені көрсету
+          </button>
+
+          <div class="result-panel" id="result-chapter-8-test">
+            <strong>Нәтиже:</strong>
+            <span class="result-text">Жауаптар тексерілгеннен кейін нәтиже осы жерде көрсетіледі.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="content-block" style="margin-top: 30px;">
+      <div class="section-kicker">Сайт аяқталды</div>
+      <h3>Савченко Н.Л. · Қаржылық ресурстарды басқару · 2019</h3>
+
+      <p>
+        Бұл сайт Савченко Н.Л. “Управление финансовыми ресурсами предприятия”
+        оқу құралы бойынша дайындалды. Материал қаржыны басқару негіздері,
+        қаржылық ақпарат, капитал көздері, капитал құрылымы, қаржылық рычаг,
+        пайда, айналым капиталы және дебиторлық берешек блоктары арқылы жүйеленді.
+      </p>
+
+      <p>
+        Тест тапсырмаларында бір, екі немесе үш дұрыс жауап болуы мүмкін.
+        “Нәтижені көрсету” батырмасын басқаннан кейін дұрыс жауаптар жасыл түспен,
+        қате белгіленген жауаптар қызыл түспен көрсетіледі және әр сұрақтың
+        түсіндірмесі ашылады.
+      </p>
+
+      <p style="margin-bottom: 0; color: var(--muted);">
+        © @elnazm_ln
+      </p>
+    </footer>
+  </div>
+
+  <a class="floating-up" href="#top" aria-label="Жоғары көтерілу">↑</a>
+
+  <script>
+    function normalizeAnswers(answerString) {
+      return answerString
+        .split(',')
+        .map(item => item.trim())
+        .filter(Boolean)
+        .sort();
+    }
+
+    function getSelectedAnswers(question) {
+      return Array
+        .from(question.querySelectorAll('input[type="checkbox"]:checked'))
+        .map(input => input.value.trim())
+        .sort();
+    }
+
+    function arraysEqual(first, second) {
+      if (first.length !== second.length) return false;
+
+      for (let i = 0; i < first.length; i++) {
+        if (first[i] !== second[i]) return false;
+      }
+
+      return true;
+    }
+
+    function checkSection(testId) {
+      const testBox = document.querySelector(`[data-test="${testId}"]`);
+      const resultPanel = document.getElementById(`result-${testId}`);
+
+      if (!testBox || !resultPanel) return;
+
+      const questions = Array.from(testBox.querySelectorAll('.question'));
+      let correctCount = 0;
+
+      questions.forEach(question => {
+        const correctAnswers = normalizeAnswers(question.dataset.answer || '');
+        const selectedAnswers = getSelectedAnswers(question);
+        const options = Array.from(question.querySelectorAll('.option'));
+
+        question.classList.add('checked');
+
+        options.forEach(option => {
+          option.classList.remove('correct', 'wrong');
+
+          const input = option.querySelector('input[type="checkbox"]');
+          if (!input) return;
+
+          const value = input.value.trim();
+          const isCorrect = correctAnswers.includes(value);
+          const isSelected = selectedAnswers.includes(value);
+
+          if (isCorrect) {
+            option.classList.add('correct');
+          }
+
+          if (isSelected && !isCorrect) {
+            option.classList.add('wrong');
+          }
+        });
+
+        if (arraysEqual(correctAnswers, selectedAnswers)) {
+          correctCount++;
+        }
+      });
+
+      const total = questions.length;
+      const percent = total > 0 ? Math.round((correctCount / total) * 100) : 0;
+
+      const resultText = resultPanel.querySelector('.result-text');
+
+      if (resultText) {
+        resultText.textContent = `${correctCount} / ${total} дұрыс жауап · ${percent}%`;
+      }
+
+      resultPanel.classList.add('show');
+
+      resultPanel.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest'
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const buttons = Array.from(document.querySelectorAll('.test-box .btn-primary'));
+
+      buttons.forEach(button => {
+        const testBox = button.closest('.test-box');
+        if (!testBox) return;
+
+        const testId = testBox.dataset.test;
+        if (!testId) return;
+
+        button.addEventListener('click', () => {
+          checkSection(testId);
+        });
+      });
+    });
+  </script>
+</body>
+</html>
